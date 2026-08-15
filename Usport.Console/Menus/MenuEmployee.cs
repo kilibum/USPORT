@@ -248,7 +248,7 @@ public class MenuEmployee
     }
 
     // Sélection d'un employé dans une liste, puis suppression après confirmation.
-    public void AfficherMenuSupprimerEmploye()
+    public void AfficherMenuSupprimerEmployee()
     {
         AnsiConsole.Clear();
         InterfaceConsole.AfficherTitre("SUPPRIMER UN EMPLOYÉ");

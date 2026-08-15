@@ -51,7 +51,7 @@ internal class Program
 
     private static void AfficherSplashScreen()
     {
-        AnsiConsole.Clear();
+        SafeClearConsole();
 
         var titre = new Panel(
             new FigletText("U S P O R T")
@@ -82,6 +82,22 @@ internal class Program
         AnsiConsole.WriteLine();
     }
 
+    private static void SafeClearConsole()
+    {
+        try
+        {
+            AnsiConsole.Clear();
+        }
+        catch (IOException)
+        {
+            // Certains hôtes de débogage n'exposent pas de buffer console valide.
+        }
+        catch (InvalidOperationException)
+        {
+            // Ignore les contextes sans console interactive.
+        }
+    }
+
     private static void ConfigureServices(IServiceCollection services)
     {
         // StockDonnees en Singleton : une seule instance partagée par tous les services.
@@ -90,23 +106,26 @@ internal class Program
         services.AddSingleton<ServiceMembre>();
         services.AddSingleton<ServiceContrat>();
         services.AddSingleton<ServiceEmployee>();
+        services.AddSingleton<ServiceOptionService>();
 
         services.AddSingleton<MenuMembre>();
         services.AddSingleton<MenuContrat>();
         services.AddSingleton<MenuEmployee>();
+        services.AddSingleton<MenuOptionService>();
     }
 
     private static void RunApplication(ServiceProvider serviceProvider)
     {
-        var menuMembre   = serviceProvider.GetRequiredService<MenuMembre>();
-        var menuContrat  = serviceProvider.GetRequiredService<MenuContrat>();
-        var menuEmployee = serviceProvider.GetRequiredService<MenuEmployee>();
-        var stockDonnees = serviceProvider.GetRequiredService<StockDonnees>();
+        var menuMembre        = serviceProvider.GetRequiredService<MenuMembre>();
+        var menuContrat       = serviceProvider.GetRequiredService<MenuContrat>();
+        var menuEmployee      = serviceProvider.GetRequiredService<MenuEmployee>();
+        var menuOptionService = serviceProvider.GetRequiredService<MenuOptionService>();
+        var stockDonnees      = serviceProvider.GetRequiredService<StockDonnees>();
 
         bool enCours = true;
         while (enCours)
         {
-            AnsiConsole.Clear();
+            SafeClearConsole();
 
             var menuTitre = new Panel(
                 new Markup("[bold]MENU PRINCIPAL[/]"))
@@ -153,7 +172,7 @@ internal class Program
                         break;
 
                     case "5. Options de service":
-                        AfficherSousMenuOptionsService(stockDonnees);
+                        AfficherSousMenuOptionsService(menuOptionService);
                         break;
 
                     case "6. Quitter":
@@ -176,7 +195,7 @@ internal class Program
         bool actif = true;
         while (actif)
         {
-            AnsiConsole.Clear();
+            SafeClearConsole();
             InterfaceConsole.AfficherTitre("GESTION DES MEMBRES");
 
             var choix = AnsiConsole.Prompt(
@@ -225,7 +244,7 @@ internal class Program
         bool actif = true;
         while (actif)
         {
-            AnsiConsole.Clear();
+            SafeClearConsole();
             InterfaceConsole.AfficherTitre("GESTION DES CONTRATS");
 
             var choix = AnsiConsole.Prompt(
@@ -280,7 +299,7 @@ internal class Program
         bool actif = true;
         while (actif)
         {
-            AnsiConsole.Clear();
+            SafeClearConsole();
             InterfaceConsole.AfficherTitre("GESTION DES EMPLOYÉS");
 
             var choix = AnsiConsole.Prompt(
@@ -331,7 +350,7 @@ internal class Program
         bool actif = true;
         while (actif)
         {
-            AnsiConsole.Clear();
+            SafeClearConsole();
             InterfaceConsole.AfficherTitre("GESTION DES CLUBS");
 
             var choix = AnsiConsole.Prompt(
@@ -372,7 +391,7 @@ internal class Program
 
     private static void AfficherListeClubs(StockDonnees stockDonnees)
     {
-        AnsiConsole.Clear();
+        SafeClearConsole();
         InterfaceConsole.AfficherTitre("LISTE DES CLUBS");
 
         if (stockDonnees.Clubs.Count == 0)
@@ -428,7 +447,7 @@ internal class Program
 
     private static void FermerClub(StockDonnees stockDonnees)
     {
-        AnsiConsole.Clear();
+        SafeClearConsole();
         InterfaceConsole.AfficherTitre("FERMER UN CLUB");
 
         var clubsOuverts = stockDonnees.Clubs
@@ -459,7 +478,7 @@ internal class Program
 
     private static void RouvrirClub(StockDonnees stockDonnees)
     {
-        AnsiConsole.Clear();
+        SafeClearConsole();
         InterfaceConsole.AfficherTitre("ROUVRIR UN CLUB");
 
         var clubsFermes = stockDonnees.Clubs
@@ -488,36 +507,54 @@ internal class Program
             $"#{club.Id:D4}");
     }
 
-    // Sous-menu d'affichage des options de service (OptionService).
-    private static void AfficherSousMenuOptionsService(StockDonnees stockDonnees)
+    // Sous-menu de gestion des options de service (CRUD complet via MenuOptionService).
+    private static void AfficherSousMenuOptionsService(MenuOptionService menuOptionService)
     {
-        AnsiConsole.Clear();
-        InterfaceConsole.AfficherTitre("OPTIONS DE SERVICE");
-
-        if (stockDonnees.OptionsService.Count == 0)
+        bool actif = true;
+        while (actif)
         {
-            AnsiConsole.Write(new Panel(new Markup("[dim][[ État vide ]] — Aucune option de service.[/]"))
-                .Border(BoxBorder.Rounded).BorderStyle(new Style(Color.Grey)).Padding(1, 0));
-            InterfaceConsole.RetourMenu();
-            return;
+            SafeClearConsole();
+            InterfaceConsole.AfficherTitre("GESTION DES OPTIONS DE SERVICE");
+
+            var choix = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title(NavHint)
+                    .HighlightStyle(new Style(Color.Blue, decoration: Decoration.Bold))
+                    .AddChoices(
+                        "1. Ajouter une option",
+                        "2. Lister les options",
+                        "3. Modifier une option",
+                        "4. Supprimer une option",
+                        RetourPrincipal
+                    )
+            );
+
+            switch (choix)
+            {
+                case "1. Ajouter une option":
+                    menuOptionService.AfficherMenuAjouterOption();
+                    InterfaceConsole.RetourMenu();
+                    break;
+
+                case "2. Lister les options":
+                    menuOptionService.AfficherMenuListeOptions();
+                    InterfaceConsole.RetourMenu();
+                    break;
+
+                case "3. Modifier une option":
+                    menuOptionService.AfficherMenuModifierOption();
+                    InterfaceConsole.RetourMenu();
+                    break;
+
+                case "4. Supprimer une option":
+                    menuOptionService.AfficherMenuSupprimerOption();
+                    InterfaceConsole.RetourMenu();
+                    break;
+
+                case RetourPrincipal:
+                    actif = false;
+                    break;
+            }
         }
-
-        var table = new Table()
-            .AddColumn(new TableColumn("[bold]ID[/]").Centered())
-            .AddColumn(new TableColumn("[bold]Option[/]"))
-            .AddColumn(new TableColumn("[bold]Prix mensuel[/]").Centered())
-            .Border(TableBorder.Rounded)
-            .BorderStyle(new Style(Color.Grey));
-
-        foreach (var opt in stockDonnees.OptionsService.OrderBy(o => o.NomOption))
-        {
-            table.AddRow(
-                opt.Id.ToString("D3"),
-                Markup.Escape(opt.NomOption),
-                $"{opt.PrixMensuel:F2} EUR");
-        }
-
-        AnsiConsole.Write(table);
-        InterfaceConsole.RetourMenu();
     }
 }

@@ -21,4 +21,15 @@ public class OptionService
 
     /// <summary>Attribue un identifiant à l'option (stockage en mémoire).</summary>
     public void AssignerId(int id) => Id = id;
+
+    /// <summary>Met à jour le nom et le prix de l'option.</summary>
+    public void MettreAJour(string nomOption, decimal prixMensuel)
+    {
+        if (string.IsNullOrWhiteSpace(nomOption)) throw new ArgumentException("Le nom de l'option est obligatoire.", nameof(nomOption));
+        if (prixMensuel < 0)                      throw new ArgumentException("Le prix ne peut pas être négatif.", nameof(prixMensuel));
+
+        NomOption        = nomOption;
+        PrixMensuel      = prixMensuel;
+        DateModification = DateTime.UtcNow;
+    }
 }

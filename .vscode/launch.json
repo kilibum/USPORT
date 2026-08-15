@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Usport.Console",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/Usport.Console/bin/Debug/net10.0/Usport.Console.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Usport.Console",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        }
+    ]
+}

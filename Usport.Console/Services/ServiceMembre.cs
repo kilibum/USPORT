@@ -43,14 +43,14 @@ public class ServiceMembre
         return VersDto(membre);
     }
 
-    public List<MembreDto> ObtenirTousLesMembres(int page, int tailleFage)
+    public List<MembreDto> ObtenirTousLesMembres(int page, int taillePage)
     {
         return _stockDonnees.Membres
             .Where(m => m.Statut == StatutMembre.Actif)
             .OrderBy(m => m.Nom)
             .ThenBy(m => m.Prenom)
-            .Skip((page - 1) * tailleFage)
-            .Take(tailleFage)
+            .Skip((page - 1) * taillePage)
+            .Take(taillePage)
             .Select(VersDto)
             .ToList();
     }

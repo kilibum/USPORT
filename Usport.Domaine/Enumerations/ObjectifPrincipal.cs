@@ -4,6 +4,6 @@ public enum ObjectifPrincipal
 {
     PerteDePoids,
     PriseDeMasse,
-    RemiseEnforme,
+    RemiseEnForme,
     Autre
 }

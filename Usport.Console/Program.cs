@@ -4,7 +4,6 @@ using Usport.Console.Data;
 using Usport.Console.Services;
 using Usport.Console.Menus;
 using Usport.Console.IU;
-using Usport.Domaine.Enumerations;
 using Spectre.Console;
 
 namespace Usport.Console;
@@ -100,18 +99,20 @@ internal class Program
 
     private static void ConfigureServices(IServiceCollection services)
     {
-        // StockDonnees en Singleton : une seule instance partagée par tous les services.
+        // StockDonnees partagé entre tous les services via l'injection de dépendances.
         services.AddSingleton<StockDonnees>();
 
         services.AddSingleton<ServiceMembre>();
         services.AddSingleton<ServiceContrat>();
         services.AddSingleton<ServiceEmployee>();
         services.AddSingleton<ServiceOptionService>();
+        services.AddSingleton<ServiceClub>();
 
         services.AddSingleton<MenuMembre>();
         services.AddSingleton<MenuContrat>();
         services.AddSingleton<MenuEmployee>();
         services.AddSingleton<MenuOptionService>();
+        services.AddSingleton<MenuClub>();
     }
 
     private static void RunApplication(ServiceProvider serviceProvider)
@@ -120,7 +121,7 @@ internal class Program
         var menuContrat       = serviceProvider.GetRequiredService<MenuContrat>();
         var menuEmployee      = serviceProvider.GetRequiredService<MenuEmployee>();
         var menuOptionService = serviceProvider.GetRequiredService<MenuOptionService>();
-        var stockDonnees      = serviceProvider.GetRequiredService<StockDonnees>();
+        var menuClub          = serviceProvider.GetRequiredService<MenuClub>();
 
         bool enCours = true;
         while (enCours)
@@ -168,7 +169,7 @@ internal class Program
                         break;
 
                     case "4. Gestion des clubs":
-                        AfficherSousMenuClubs(stockDonnees);
+                        AfficherSousMenuClubs(menuClub);
                         break;
 
                     case "5. Options de service":
@@ -343,8 +344,7 @@ internal class Program
         }
     }
 
-    // Sous-menu de gestion des clubs : liste, fermeture et réouverture.
-    private static void AfficherSousMenuClubs(StockDonnees stockDonnees)
+    private static void AfficherSousMenuClubs(MenuClub menuClub)
     {
         bool actif = true;
         while (actif)
@@ -367,18 +367,15 @@ internal class Program
             switch (choix)
             {
                 case "1. Lister les clubs":
-                    AfficherListeClubs(stockDonnees);
-                    InterfaceConsole.RetourMenu();
+                    menuClub.AfficherMenuListeClubs();
                     break;
 
                 case "2. Fermer un club":
-                    FermerClub(stockDonnees);
-                    InterfaceConsole.RetourMenu();
+                    menuClub.AfficherMenuFermerClub();
                     break;
 
                 case "3. Rouvrir un club":
-                    RouvrirClub(stockDonnees);
-                    InterfaceConsole.RetourMenu();
+                    menuClub.AfficherMenuRouvrirClub();
                     break;
 
                 case RetourPrincipal:
@@ -388,125 +385,7 @@ internal class Program
         }
     }
 
-    private static void AfficherListeClubs(StockDonnees stockDonnees)
-    {
-        SafeClearConsole();
-        InterfaceConsole.AfficherTitre("LISTE DES CLUBS");
-
-        if (stockDonnees.Clubs.Count == 0)
-        {
-            AnsiConsole.Write(new Panel(new Markup("[dim][[ État vide ]] — Aucun club enregistré.[/]"))
-                .Border(BoxBorder.Rounded).BorderStyle(new Style(Color.Grey)).Padding(1, 0));
-            return;
-        }
-
-        var table = new Table()
-            .AddColumn(new TableColumn("[bold]ID[/]").Centered())
-            .AddColumn(new TableColumn("[bold]Nom[/]"))
-            .AddColumn(new TableColumn("[bold]Adresse[/]"))
-            .AddColumn(new TableColumn("[bold]Ville[/]"))
-            .AddColumn(new TableColumn("[bold]Code postal[/]").Centered())
-            .AddColumn(new TableColumn("[bold]Ouvert le[/]"))
-            .AddColumn(new TableColumn("[bold]24h/24[/]").Centered())
-            .AddColumn(new TableColumn("[bold]Statut[/]").Centered())
-            .Border(TableBorder.Rounded)
-            .BorderStyle(new Style(Color.Grey));
-
-        foreach (var club in stockDonnees.Clubs.OrderBy(c => c.Nom))
-        {
-            var couleur = club.StatutOperationnel switch
-            {
-                StatutOperationnelClub.Ouvert              => "green",
-                StatutOperationnelClub.FermeTemporairement => "yellow",
-                StatutOperationnelClub.FermeDefinitivement => "red",
-                _                                          => "white"
-            };
-
-            var statutLabel = club.StatutOperationnel switch
-            {
-                StatutOperationnelClub.Ouvert              => "OUVERT",
-                StatutOperationnelClub.FermeTemporairement => "FERMÉ TEMP.",
-                StatutOperationnelClub.FermeDefinitivement => "FERMÉ DÉF.",
-                _                                          => club.StatutOperationnel.ToString()
-            };
-
-            table.AddRow(
-                club.Id.ToString("D3"),
-                Markup.Escape(club.Nom),
-                Markup.Escape(club.AdresseRue),
-                Markup.Escape(club.AdresseVille),
-                Markup.Escape(club.AdresseCodePostal),
-                club.DateOuverture.ToString("yyyy-MM-dd"),
-                club.EstOuvert247 ? "[green]Oui[/]" : "Non",
-                $"[{couleur}]{statutLabel}[/]");
-        }
-
-        AnsiConsole.Write(table);
-    }
-
-    private static void FermerClub(StockDonnees stockDonnees)
-    {
-        SafeClearConsole();
-        InterfaceConsole.AfficherTitre("FERMER UN CLUB");
-
-        var clubsOuverts = stockDonnees.Clubs
-            .Where(c => c.EstOperationnel())
-            .OrderBy(c => c.Nom)
-            .ToList();
-
-        if (clubsOuverts.Count == 0)
-        {
-            InterfaceConsole.AfficherAlerte("Aucun club ouvert à fermer.");
-            return;
-        }
-
-        var club = AnsiConsole.Prompt(
-            new SelectionPrompt<Domaine.Entites.GestionClub.Club>()
-                .Title(" [bold]Sélectionnez le club à fermer :[/]")
-                .HighlightStyle(new Style(Color.Yellow, decoration: Decoration.Bold))
-                .PageSize(10)
-                .UseConverter(c => $"{Markup.Escape(c.Nom)}  [dim]({Markup.Escape(c.AdresseVille)})[/]")
-                .AddChoices(clubsOuverts));
-
-        club.Fermer();
-
-        InterfaceConsole.AfficherSucces(
-            $"Club {club.Nom} fermé temporairement.",
-            $"#{club.Id:D4}");
-    }
-
-    private static void RouvrirClub(StockDonnees stockDonnees)
-    {
-        SafeClearConsole();
-        InterfaceConsole.AfficherTitre("ROUVRIR UN CLUB");
-
-        var clubsFermes = stockDonnees.Clubs
-            .Where(c => !c.EstOperationnel())
-            .OrderBy(c => c.Nom)
-            .ToList();
-
-        if (clubsFermes.Count == 0)
-        {
-            InterfaceConsole.AfficherAlerte("Aucun club fermé à rouvrir.");
-            return;
-        }
-
-        var club = AnsiConsole.Prompt(
-            new SelectionPrompt<Domaine.Entites.GestionClub.Club>()
-                .Title(" [bold]Sélectionnez le club à rouvrir :[/]")
-                .HighlightStyle(new Style(Color.Green, decoration: Decoration.Bold))
-                .PageSize(10)
-                .UseConverter(c => $"{Markup.Escape(c.Nom)}  [dim]({Markup.Escape(c.AdresseVille)})[/]")
-                .AddChoices(clubsFermes));
-
-        club.Reouvrir();
-
-        InterfaceConsole.AfficherSucces(
-            $"Club {club.Nom} réouvert avec succès.",
-            $"#{club.Id:D4}");
-    }
-
-    // Sous-menu de gestion des options de service 
+    // Sous-menu de gestion des options de service
     private static void AfficherSousMenuOptionsService(MenuOptionService menuOptionService)
     {
         bool actif = true;

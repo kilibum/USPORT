@@ -1,5 +1,4 @@
 using Usport.Domaine.Enumerations;
-using Usport.Domaine.Entites.GestionClub;
 using Usport.Domaine.Exceptions;
 
 namespace Usport.Domaine.Entites.Adhesion;
@@ -24,11 +23,6 @@ public class Contrat
     public DateTime DateChangementStatut { get; private set; }
     public DateTime DateCreation { get; private set; }
     public DateTime DateModification { get; private set; }
-
-    // Navigation
-    public Membre Membre { get; private set; } = null!;
-    public PlanAbonnement Plan { get; private set; } = null!;
-    public Club ClubPrincipal { get; private set; } = null!;
 
     public Contrat(int idMembre, int idPlan, int idClubPrincipal,
                     DateOnly dateDebut, DateOnly? dateFin,

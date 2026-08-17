@@ -26,11 +26,6 @@ public class Membre : Personne
     public int NombreVisitesTotal { get; private set; }
     public DateTime DateChangementStatut { get; private set; }
 
-    // Navigation (lecture seule depuis l'extérieur)
-    public Membre? MembreParrain { get; private set; }
-    public ICollection<Membre> MembresParraines { get; } = [];
-    public ICollection<Contrat> Contrats { get; } = [];
-
     private Membre(string prenom, string nom, string email, DateOnly dateNaissance,
                    string? telephone, string? ville,
                    Genre genre, ObjectifPrincipal? objectifPrincipal, SourceAcquisition? sourceAcquisition)

@@ -14,9 +14,6 @@ public class Employe : Personne
     public string? Qualifications { get; private set; }
     public DateOnly DateEmbauche { get; private set; }
 
-    // Navigation
-    public Club Club { get; private set; } = null!;
-
     private Employe(int clubId, string prenom, string nom, string email,
                      RoleEmploye role, DateOnly dateEmbauche, decimal? salaireMensuel = null,
                      string? qualifications = null)

@@ -5,8 +5,7 @@ using Usport.Domaine.Entites.GestionClub;
 namespace Usport.Console.Data;
 
 /// <summary>
-/// Stockage en mémoire de toutes les données de l'application.
-/// Remplace la base de données par des listes en mémoire.
+/// Stockage en mémoire de toutes les données de l'application et remplace la base de données par des listes en mémoire.
 /// </summary>
 public class StockDonnees
 {
@@ -16,10 +15,10 @@ public class StockDonnees
     public List<Club> Clubs { get; } = new();
     public List<OptionService> OptionsService { get; } = new();
 
-    // Données de référence (plans pré-chargés au démarrage).
+    // Données de référence.
     public List<OptionPlan> Plans { get; } = new();
 
-    // Contrats stockés comme DTOs (incluent le prix mensuel calculé).
+    // Contrats stockés comme DTOs.
     public List<ContratDto> Contrats { get; } = new();
 
     // Compteurs auto-incrémentés pour simuler les IDs de base de données.
@@ -36,9 +35,9 @@ public class StockDonnees
     public int ProchainIdOptionService() => _prochainIdOptionService++;
 
     /// <summary>
-    /// Charge les données de démarrage : clubs, plans et options de service.
-    /// Appelé une seule fois au lancement de l'application.
+    /// Charge les données de démarrage.
     /// </summary>
+
     public void Amorcer()
     {
         // Clubs de référence (entités du domaine avec comportements)

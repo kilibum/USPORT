@@ -6,7 +6,7 @@ using Usport.Domaine.Enumerations;
 namespace Usport.Console.Services;
 
 /// <summary>
-/// Service de gestion des membres (stockage en mémoire).
+/// Service de gestion des membres.
 /// </summary>
 public class ServiceMembre
 {

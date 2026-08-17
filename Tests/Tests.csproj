@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Usport.Domaine\Usport.Domaine.csproj" />
+    <ProjectReference Include="..\Usport.Console\Usport.Console.csproj" />
   </ItemGroup>
 
   <ItemGroup>

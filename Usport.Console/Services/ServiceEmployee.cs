@@ -6,7 +6,7 @@ using Usport.Domaine.Enumerations;
 namespace Usport.Console.Services;
 
 /// <summary>
-/// Service de gestion des employés (stockage en mémoire).
+/// Service de gestion des employés.
 /// </summary>
 public class ServiceEmployee
 {
@@ -64,8 +64,7 @@ public class ServiceEmployee
         return (employe.SalaireMensuel, employe.Qualifications);
     }
 
-    // Met à jour l'affectation et la rémunération d'un employé.
-    // On recrée l'entité car les propriétés sont en private set.
+    // Met à jour l'affectation et la rémunération d'un employé ainsi que la recréation de l'entité.
     public bool MettreAJourEmploye(
         int id, int idClub, RoleEmploye role, decimal? salaireMensuel, string? qualifications)
     {

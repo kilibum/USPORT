@@ -46,13 +46,13 @@ public class Contrat
         DateModification      = DateTime.UtcNow;
     }
 
-    // ── Comportements ────────────────────────────────────────────────────
+    // Comportements 
 
     /// <summary>Indique si le contrat est actif.</summary>
     public bool EstActif() => Statut == StatutContrat.Actif;
 
     /// <summary>
-    /// Annule le contrat. Lève une ExceptionRegleMetier si déjà annulé ou expiré.
+    /// Annule le contrat.
     /// </summary>
     public void Annuler(string? motif = null)
     {
@@ -72,7 +72,6 @@ public class Contrat
 
     /// <summary>
     /// Gèle le contrat pour une période donnée.
-    /// Seul un contrat actif peut être gelé ; la date de fin doit être postérieure au début.
     /// </summary>
     public void Geler(DateOnly debut, DateOnly fin)
     {

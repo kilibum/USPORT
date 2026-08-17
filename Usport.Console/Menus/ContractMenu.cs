@@ -254,7 +254,7 @@ public class MenuContrat
         }
     }
 
-    // ── Helpers privés ───────────────────────────────────────────────────
+    // Helpers privés
 
     // Demande le choix d'un plan d'abonnement ; retourne null si aucun n'existe.
     private OptionPlan? ChoisirPlan(string titre)

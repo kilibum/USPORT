@@ -6,7 +6,7 @@ using Spectre.Console;
 namespace Usport.Console.Menus;
 
 /// <summary>
-/// Menus interactifs liés à la gestion des options de service (CRUD complet).
+/// Menus interactifs liés à la gestion des options de service.
 /// </summary>
 public class MenuOptionService
 {

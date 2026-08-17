@@ -5,7 +5,7 @@ using Usport.Domaine.Entites.Adhesion;
 namespace Usport.Console.Services;
 
 /// <summary>
-/// Service de gestion des options de service (stockage en mémoire).
+/// Service de gestion des options de service.
 /// </summary>
 public class ServiceOptionService
 {

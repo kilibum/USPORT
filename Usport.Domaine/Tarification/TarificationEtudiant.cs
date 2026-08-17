@@ -1,7 +1,7 @@
 namespace Usport.Domaine.Tarification;
 
 /// <summary>
-/// Tarif étudiant : remise de 40 % appliquée au mois comme à l'année.
+/// Tarif étudiant :remise de 40 % appliquée au mois comme à l'année.
 /// </summary>
 public class TarificationEtudiant : IStrategieTarification
 {

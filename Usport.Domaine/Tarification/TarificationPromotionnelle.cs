@@ -7,7 +7,7 @@ public class TarificationPromotionnelle : IStrategieTarification
 {
     private readonly decimal _pourcentageRemise;
 
-    // La remise est exprimée en décimal (0.25 = 25 %) et validée à la construction.
+    // Remise exprimée en décimal (0.25 = 25 %) et validée à la construction.
     public TarificationPromotionnelle(decimal pourcentageRemise)
     {
         if (pourcentageRemise < 0m || pourcentageRemise > 1m)

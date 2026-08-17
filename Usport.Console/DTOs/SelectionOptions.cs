@@ -3,7 +3,6 @@ using Usport.Domaine.Enumerations;
 namespace Usport.Console.DTOs;
 
 // Options proposées dans les listes de sélection interactives des menus.
-// Elles évitent à l'utilisateur de saisir un identifiant à l'aveugle.
 
 public record OptionMembre(int Id, string NomComplet, string? Ville);
 

@@ -39,29 +39,24 @@ public class Club
         DateModification   = DateTime.UtcNow;
     }
 
-    // ── Comportements ────────────────────────────────────────────────────
+    // Comportements
 
-    /// <summary>Indique si le club est opérationnel.</summary>
     public bool EstOperationnel() => StatutOperationnel == StatutOperationnelClub.Ouvert;
 
-    /// <summary>Ferme temporairement le club (maintenance, travaux).</summary>
     public void Fermer()
     {
         StatutOperationnel = StatutOperationnelClub.FermeTemporairement;
         DateModification    = DateTime.UtcNow;
     }
 
-    /// <summary>Réouvre un club précédemment fermé.</summary>
     public void Reouvrir()
     {
         StatutOperationnel = StatutOperationnelClub.Ouvert;
         DateModification    = DateTime.UtcNow;
     }
 
-    /// <summary>Attribue un identifiant au club (stockage en mémoire).</summary>
     public void AssignerId(int id) => Id = id;
 
-    /// <summary>Représentation lisible du club pour l'affichage.</summary>
     public string ObtenirInfosAffichage()
         => $"Club: {Nom} — {AdresseVille}, {Pays} ({StatutOperationnel})";
 }

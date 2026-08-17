@@ -344,7 +344,6 @@ internal class Program
     }
 
     // Sous-menu de gestion des clubs : liste, fermeture et réouverture.
-    // Exploite l'entité Club et ses comportements (Fermer, Reouvrir, EstOperationnel).
     private static void AfficherSousMenuClubs(StockDonnees stockDonnees)
     {
         bool actif = true;
@@ -507,7 +506,7 @@ internal class Program
             $"#{club.Id:D4}");
     }
 
-    // Sous-menu de gestion des options de service (CRUD complet via MenuOptionService).
+    // Sous-menu de gestion des options de service 
     private static void AfficherSousMenuOptionsService(MenuOptionService menuOptionService)
     {
         bool actif = true;

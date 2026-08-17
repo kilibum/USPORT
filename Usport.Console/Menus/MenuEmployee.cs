@@ -8,7 +8,6 @@ namespace Usport.Console.Menus;
 
 /// <summary>
 /// Menus interactifs liés à la gestion des employés (ajout, liste).
-/// Le club et le rôle sont choisis dans des listes pour éviter la saisie d'un code.
 /// </summary>
 public class MenuEmployee
 {

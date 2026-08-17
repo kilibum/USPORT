@@ -6,7 +6,7 @@ using Usport.Domaine.Tarification;
 namespace Usport.Console.Services;
 
 /// <summary>
-/// Service de gestion des contrats (stockage en mémoire).
+/// Service de gestion des contrats.
 /// </summary>
 public class ServiceContrat
 {

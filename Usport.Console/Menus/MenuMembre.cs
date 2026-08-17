@@ -157,7 +157,7 @@ public class MenuMembre
         }
     }
 
-    // Liste paginée des membres (20 par page) avec navigation.
+    // Liste paginée des membres avec navigation.
     public void AfficherMenuListeMembres()
     {
         int taillePage = 20;
@@ -363,7 +363,7 @@ public class MenuMembre
         }
     }
 
-    // ── Helpers privés ───────────────────────────────────────────────────
+    // Helpers privés
 
     private static string GenreLabel(Genre g) => g switch
     {
